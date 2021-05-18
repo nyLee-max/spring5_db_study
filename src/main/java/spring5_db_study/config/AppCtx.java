@@ -4,6 +4,9 @@ import org.apache.tomcat.jdbc.pool.DataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import spring5_db_study.spring.ChangePasswordService;
 import spring5_db_study.spring.MemberDao;
@@ -15,6 +18,7 @@ import spring5_db_study.spring.VersionPrinter;
 
 @Configuration
 @ComponentScan(basePackages = { "spring5_db_study.config" })
+@EnableTransactionManagement 
 public class AppCtx {
 
 	@Bean(destroyMethod = "close")
@@ -31,6 +35,13 @@ public class AppCtx {
 		ds.setMinEvictableIdleTimeMillis(100 * 60 * 3); // 최소 유휴시간 3분
 		ds.setTimeBetweenEvictionRunsMillis(1000 * 10); // 10초 주기
 		return ds;
+	}
+	
+	@Bean
+	public PlatformTransactionManager transactionManager() {
+		DataSourceTransactionManager tm = new DataSourceTransactionManager();
+		tm.setDataSource(dataSource());
+		return tm;
 	}
 
 	@Bean
